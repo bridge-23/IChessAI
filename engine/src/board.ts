@@ -51,6 +51,7 @@ class Board {
   }
 
   // Basic move validation
+  // src/board.ts
   isValidMove(from: Position, to: Position): boolean {
     const piece = this.getPiece(from);
     if (!piece) return false;
@@ -62,7 +63,59 @@ class Board {
     const destPiece = this.getPiece(to);
     if (destPiece && destPiece.color === piece.color) return false;
 
-    // Add more specific move validation logic for each piece type here
+    // Validate moves for each piece type
+    switch (piece.type) {
+      case PieceType.Pawn:
+        return this.isValidPawnMove(from, to, piece.color);
+      case PieceType.Rook:
+        return this.isValidRookMove(from, to);
+      case PieceType.Knight:
+        return this.isValidKnightMove(from, to);
+      case PieceType.Bishop:
+        return this.isValidBishopMove(from, to);
+      case PieceType.Queen:
+        return this.isValidQueenMove(from, to);
+      case PieceType.King:
+        return this.isValidKingMove(from, to);
+      default:
+        return false;
+    }
+  }
+
+  // Implement rules for each piece
+  isValidPawnMove(from: Position, to: Position, color: Color): boolean {
+    // Basic pawn move validation logic
+    // Add more specific rules here
+    return true;
+  }
+
+  isValidRookMove(from: Position, to: Position): boolean {
+    // Basic rook move validation logic
+    // Add more specific rules here
+    return true;
+  }
+
+  isValidKnightMove(from: Position, to: Position): boolean {
+    // Basic knight move validation logic
+    // Add more specific rules here
+    return true;
+  }
+
+  isValidBishopMove(from: Position, to: Position): boolean {
+    // Basic bishop move validation logic
+    // Add more specific rules here
+    return true;
+  }
+
+  isValidQueenMove(from: Position, to: Position): boolean {
+    // Basic queen move validation logic
+    // Add more specific rules here
+    return true;
+  }
+
+  isValidKingMove(from: Position, to: Position): boolean {
+    // Basic king move validation logic
+    // Add more specific rules here
     return true;
   }
 
