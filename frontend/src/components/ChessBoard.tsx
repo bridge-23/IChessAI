@@ -15,7 +15,7 @@ const pieceIcons: { [key: string]: string } = {
   'p': '♟',
 };
 
-const ChessBoard: React.FC<{ onMove: (move: string, piece: string) => void }> = ({ onMove }) => {
+const ChessBoard: React.FC<{ onMove: (move: string, piece: string) => void, currentPlayer: 'white' | 'black' }> = ({ onMove, currentPlayer }) => {
   const initialBoard = [
     ['r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'],
     ['p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'],
@@ -32,8 +32,9 @@ const ChessBoard: React.FC<{ onMove: (move: string, piece: string) => void }> = 
 
   const handleSquareClick = (row: number, col: number) => {
     if (!selectedPiece) {
-      // Select the piece
-      if (board[row][col] !== '') {
+      // Select the piece if it's the current player's turn to move their pieces
+      const piece = board[row][col];
+      if (piece && (currentPlayer === 'white' ? piece === piece.toUpperCase() : piece === piece.toLowerCase())) {
         setSelectedPiece({ row, col });
       }
     } else {
@@ -45,7 +46,7 @@ const ChessBoard: React.FC<{ onMove: (move: string, piece: string) => void }> = 
       setBoard(newBoard);
       setSelectedPiece(null);
 
-      const move = `Moved from (${selectedPiece.row}, ${selectedPiece.col}) to (${row}, ${col})`;
+      const move = `Moved ${pieceIcons[piece]} from (${selectedPiece.row}, ${selectedPiece.col}) to (${row}, ${col})`;
       onMove(move, piece);
     }
   };
