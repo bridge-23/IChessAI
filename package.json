@@ -1,18 +1,50 @@
 {
-  "engines": {
-    "node": ">=16.0.0",
-    "npm": ">=7.0.0"
-  },
-  "name": "hello_world",
+  "name": "ic-rust-nextjs",
+  "version": "1.0.1",
+  "author": "b3hr4d <b3hr4d@live.com>",
+  "description": "Internet Computer Rust + NextJS Template",
+  "keywords": [
+    "nextjs",
+    "rust",
+    "internet computer",
+    "icp",
+    "starter",
+    "dfinity"
+  ],
   "scripts": {
-    "build": "npm run build --workspaces --if-present",
-    "prebuild": "npm run prebuild --workspaces --if-present",
-    "pretest": "npm run prebuild --workspaces --if-present",
-    "start": "npm start --workspaces --if-present",
-    "test": "npm test --workspaces --if-present"
+    "install:all": "(yarn -v && yarn || npm install) && npm run ic-wasm:install && npm run candid:install",
+    "candid:install": "cargo install candid-extractor",
+    "ic-wasm:install": "cargo install ic-wasm",
+    "build": "next build",
+    "start": "next start",
+    "export": "next build",
+    "dev": "next dev",
+    "deploy": "dfx deploy",
+    "dfx:stop": "dfx stop",
+    "dfx:pull": "dfx deps pull && dfx deps init",
+    "dfx:start": "dfx start --background --clean",
+    "dfx:build": "sh ./predeploy.sh && dfx build",
+    "dfx:identity": "dfx deps deploy internet_identity",
+    "dfx:generate": "dfx generate"
   },
-  "type": "module",
-  "workspaces": [
-    "src/hello_world_frontend"
-  ]
+  "dependencies": {
+    "@ic-reactor/react": "^1.2.0",
+    "@tanstack/query-core": "^5.51.21",
+    "@tanstack/react-query": "^5.51.21",
+    "next": "^14.2.5",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "viem": "^2.18.8",
+    "vite": "^5.4.2",
+    "wagmi": "^2.12.2",
+    "yarn": "^1.22.22"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.10",
+    "@types/react": "^18.3.3",
+    "dotenv": "^16.4.5",
+    "typescript": "^5.5.3"
+  },
+  "main": "next.config.js",
+  "license": "ISC"
 }

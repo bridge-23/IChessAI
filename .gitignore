@@ -31,3 +31,9 @@
 *.exe
 *.out
 *.app
+.next
+.dfx
+node_modules/
+out/
+build-library
+node_modules/*

@@ -7,15 +7,21 @@
         "wasm": "build/chess23.wasm"
       }
       ,
-      "hello_world_frontend": {
+      "frontend": {
+        "declarations": {
+          "node_compatibility": true,
+           "env_override": ""
+        },
       "dependencies": [
         "chess23"
       ],
+      "frontend": {
+        "entrypoint": "out/index.html"
+      },
       "source": [
-        "src/hello_world_frontend/dist"
+        "out"
       ],
-      "type": "assets",
-      "workspace": "hello_world_frontend"
+      "type": "assets"
     }
     },
   
