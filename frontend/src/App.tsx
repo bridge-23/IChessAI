@@ -49,11 +49,6 @@ const App: React.FC = () => {
     }
   };
 
-  const handleBackToOnboarding = () => {
-    setGameMode(null);
-    setCurrentView('onboarding');
-  };
-
   return (
     <div className="flex flex-col items-center h-screen p-4">
       <div className="absolute top-0 right-0 p-4">
@@ -76,7 +71,7 @@ const App: React.FC = () => {
               <div className={`mb-4 text-2xl font-bold ${timeLeft <= 10 ? 'text-red-600' : ''}`}>
                 {currentPlayer === 'white' ? 'White' : 'Black'}'s Turn - Time Left: {timeLeft}s
               </div>
-              <ChessBoard onMove={handleMove} currentPlayer={'white'} />
+              <ChessBoard onMove={handleMove} />
             </div>
             <MoveHistory moves={moves} />
           </div>

@@ -17,8 +17,8 @@
     "@dfinity/principal": "^2.0.0",
     "@internet-identity-labs/react-ic-ii-auth": "^0.0.19",
     "@types/react-router-dom": "^5.3.3",
-    "ic-use-internet-identity": "^0.0.11",
     "chess.js": "^1.0.0-beta.8",
+    "ic-use-internet-identity": "^0.0.11",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.26.1"
