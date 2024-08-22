@@ -5,33 +5,17 @@
         "type": "custom",
         "candid": "src/chess23.did",
         "wasm": "build/chess23.wasm"
-      },
-      "chess23_backend": {
-      "build": "npx azle chess23_backend",
-      "candid": "chess23_frontend/src/chess23_backend/chess23_backend.did",
-      "gzip": true,
-      "main": "chess23_frontend/src/chess23_backend/src/index.ts",
-      "tech_stack": {
-        "cdk": {
-          "azle": {}
-        },
-        "language": {
-          "javascript": {},
-          "typescript": {}
-        }
-      },
-      "type": "custom",
-      "wasm": ".azle/chess23_backend/chess23_backend.wasm"
-    },
-    "chess23_frontend": {
+      }
+      ,
+      "hello_world_frontend": {
       "dependencies": [
-        "chess23_backend"
+        "chess23"
       ],
       "source": [
-        "chess23_frontend/src/chess23_frontend/dist"
+        "src/hello_world_frontend/dist"
       ],
       "type": "assets",
-      "workspace": "chess23_frontend"
+      "workspace": "hello_world_frontend"
     }
     },
   
