@@ -15,7 +15,7 @@ const pieceIcons: { [key: string]: string } = {
   'p': '♟',
 };
 
-const ChessBoard: React.FC = () => {
+const ChessBoard: React.FC<{ onMove: (move: string) => void }> = ({ onMove }) => {
   const initialBoard = [
     ['r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'],
     ['p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'],
@@ -32,16 +32,17 @@ const ChessBoard: React.FC = () => {
   const [PGN, setPGN] = useState('1. c3');
 
   const handleSquareClick = (row: number, col: number) => {
-    // Implement logic to handle clicks on chess squares
+    const move = `Move from (${row}, ${col})`;
+    onMove(move);
   };
 
   const renderSquare = (row: number, col: number) => {
     const piece = board[row][col];
     return (
       <div
-        className={`w-12 h-12 flex items-center justify-center ${
+        className={`w-16 h-16 flex items-center justify-center ${
           (row + col) % 2 === 0 ? 'bg-gray-300' : 'bg-gray-700'
-        }`}
+        } hover:opacity-75 cursor-pointer`}
         onClick={() => handleSquareClick(row, col)}
       >
         {piece && (
@@ -66,18 +67,18 @@ const ChessBoard: React.FC = () => {
           </React.Fragment>
         ))}
       </div>
-      <div className="mt-4">
-        <label className="block">FEN:</label>
+      <div className="mt-4 w-64">
+        <label className="block text-sm font-semibold">FEN:</label>
         <input
           type="text"
           value={FEN}
           readOnly
-          className="border px-2 py-1 mt-2"
+          className="border px-2 py-1 mt-2 w-full"
         />
       </div>
-      <div className="mt-4">
-        <label>PGN:</label>
-        <div className="border px-2 py-1 mt-2">
+      <div className="mt-4 w-64">
+        <label className="text-sm font-semibold">PGN:</label>
+        <div className="border px-2 py-1 mt-2 w-full">
           {PGN}
         </div>
       </div>
