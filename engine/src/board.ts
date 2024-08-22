@@ -1,13 +1,25 @@
-// src/chessGame.ts
+// src/board.ts
 import { Piece, PieceType, Color, Position } from "./types";
 
 class Board {
   private squares: (Piece | null)[][];
+  private halfmoveClock: number;
+  private fullmoveNumber: number;
+  public current: {
+    status: number;
+    turn: Color;
+  };
 
   constructor() {
     this.squares = Array(8)
       .fill(null)
       .map(() => Array(8).fill(null));
+    this.halfmoveClock = 0;
+    this.fullmoveNumber = 1;
+    this.current = {
+      status: 0, // Active game status
+      turn: Color.White,
+    };
     this.setupInitialPosition();
   }
 
@@ -41,17 +53,26 @@ class Board {
     return this.squares[pos.row][pos.col];
   }
 
-  movePiece(from: Position, to: Position) {
+  movePiece(from: Position, to: Position): boolean {
     const piece = this.getPiece(from);
     if (!piece) return false;
 
     this.squares[to.row][to.col] = piece;
     this.squares[from.row][from.col] = null;
+
+    // Update halfmove clock and fullmove number
+    this.halfmoveClock++;
+    if (piece.type === PieceType.Pawn || this.getPiece(to) !== null) {
+      this.halfmoveClock = 0;
+    }
+    if (piece.color === Color.Black) {
+      this.fullmoveNumber++;
+    }
+
     return true;
   }
 
-  // Basic move validation
-  // src/board.ts
+  // Basic move validation with specific rules
   isValidMove(from: Position, to: Position): boolean {
     const piece = this.getPiece(from);
     if (!piece) return false;
@@ -82,41 +103,120 @@ class Board {
     }
   }
 
-  // Implement rules for each piece
   isValidPawnMove(from: Position, to: Position, color: Color): boolean {
-    // Basic pawn move validation logic
-    // Add more specific rules here
-    return true;
+    const dir = color === Color.White ? -1 : 1;
+    const startRow = color === Color.White ? 6 : 1;
+
+    // Move forward
+    if (from.col === to.col) {
+      // Move one step forward
+      if (to.row === from.row + dir && !this.getPiece(to)) {
+        return true;
+      }
+      // Move two steps forward from starting position
+      if (
+        from.row === startRow &&
+        to.row === from.row + 2 * dir &&
+        !this.getPiece(to) &&
+        !this.getPiece({ row: from.row + dir, col: from.col })
+      ) {
+        return true;
+      }
+    }
+    // Capture diagonally
+    else if (
+      Math.abs(to.col - from.col) === 1 &&
+      to.row === from.row + dir &&
+      this.getPiece(to) &&
+      this.getPiece(to)!.color !== color
+    ) {
+      return true;
+    }
+
+    return false;
   }
 
   isValidRookMove(from: Position, to: Position): boolean {
-    // Basic rook move validation logic
-    // Add more specific rules here
+    if (from.row !== to.row && from.col !== to.col) return false;
+
+    const stepRow = from.row === to.row ? 0 : to.row > from.row ? 1 : -1;
+    const stepCol = from.col === to.col ? 0 : to.col > from.col ? 1 : -1;
+
+    let currentRow = from.row + stepRow;
+    let currentCol = from.col + stepCol;
+
+    while (currentRow !== to.row || currentCol !== to.col) {
+      if (this.getPiece({ row: currentRow, col: currentCol })) return false;
+      currentRow += stepRow;
+      currentCol += stepCol;
+    }
+
     return true;
   }
 
   isValidKnightMove(from: Position, to: Position): boolean {
-    // Basic knight move validation logic
-    // Add more specific rules here
-    return true;
+    const rowDiff = Math.abs(from.row - to.row);
+    const colDiff = Math.abs(from.col - to.col);
+
+    return (rowDiff === 2 && colDiff === 1) || (rowDiff === 1 && colDiff === 2);
   }
 
   isValidBishopMove(from: Position, to: Position): boolean {
-    // Basic bishop move validation logic
-    // Add more specific rules here
+    if (Math.abs(from.row - to.row) !== Math.abs(from.col - to.col))
+      return false;
+
+    const stepRow = to.row > from.row ? 1 : -1;
+    const stepCol = to.col > from.col ? 1 : -1;
+
+    let currentRow = from.row + stepRow;
+    let currentCol = from.col + stepCol;
+
+    while (currentRow !== to.row || currentCol !== to.col) {
+      if (this.getPiece({ row: currentRow, col: currentCol })) return false;
+      currentRow += stepRow;
+      currentCol += stepCol;
+    }
+
     return true;
   }
 
   isValidQueenMove(from: Position, to: Position): boolean {
-    // Basic queen move validation logic
-    // Add more specific rules here
-    return true;
+    return this.isValidRookMove(from, to) || this.isValidBishopMove(from, to);
   }
 
   isValidKingMove(from: Position, to: Position): boolean {
-    // Basic king move validation logic
-    // Add more specific rules here
-    return true;
+    const rowDiff = Math.abs(from.row - to.row);
+    const colDiff = Math.abs(from.col - to.col);
+
+    return rowDiff <= 1 && colDiff <= 1;
+  }
+
+  isCheckmate(): boolean {
+    // Implement logic to check for checkmate
+    // Placeholder return
+    return false;
+  }
+
+  isStalemate(): boolean {
+    // Implement logic to check for stalemate
+    // Placeholder return
+    return false;
+  }
+
+  isFiftyMoveDraw(): boolean {
+    return this.halfmoveClock >= 50;
+  }
+
+  isInsufficientMaterial(): boolean {
+    // Implement logic to check for insufficient material
+    // Placeholder return
+    return false;
+  }
+
+  listAllMoves(color: Color, coord?: string) {
+    // Implement logic to list all possible moves for a given color
+    // Placeholder return
+    return [];
   }
 
   toFEN(): string {
@@ -141,8 +241,14 @@ class Board {
       );
     });
 
-    // Add additional FEN details like active color, castling availability, etc.
-    return ranks.join("/");
+    // Active color
+    const activeColor = this.current.turn === Color.White ? "w" : "b";
+
+    // Castling availability and en passant target are placeholders for now
+    const castling = "-";
+    const enPassant = "-";
+
+    return `${ranks.join("/")}${activeColor} ${castling} ${enPassant} ${this.halfmoveClock} ${this.fullmoveNumber}`;
   }
 }
 
