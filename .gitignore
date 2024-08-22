@@ -26,7 +26,11 @@
 *.a
 *.lib
 
+.dfx/*
 # Executables
 *.exe
 *.out
 *.app
+
+build/*
+build-library/*
