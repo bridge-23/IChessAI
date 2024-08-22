@@ -15,7 +15,7 @@ const pieceIcons: { [key: string]: string } = {
   'p': '♟',
 };
 
-const ChessBoard: React.FC<{ onMove: (move: string) => void }> = ({ onMove }) => {
+const ChessBoard: React.FC<{ onMove: (move: string, piece: string) => void }> = ({ onMove }) => {
   const initialBoard = [
     ['r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'],
     ['p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'],
@@ -28,21 +28,36 @@ const ChessBoard: React.FC<{ onMove: (move: string) => void }> = ({ onMove }) =>
   ];
 
   const [board, setBoard] = useState(initialBoard);
-  const [FEN, setFEN] = useState('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR');
-  const [PGN, setPGN] = useState('1. c3');
+  const [selectedPiece, setSelectedPiece] = useState<{ row: number, col: number } | null>(null);
 
   const handleSquareClick = (row: number, col: number) => {
-    const move = `Move from (${row}, ${col})`;
-    onMove(move);
+    if (!selectedPiece) {
+      // Select the piece
+      if (board[row][col] !== '') {
+        setSelectedPiece({ row, col });
+      }
+    } else {
+      // Move the piece
+      const newBoard = [...board.map(row => [...row])];
+      const piece = newBoard[selectedPiece.row][selectedPiece.col];
+      newBoard[row][col] = piece;
+      newBoard[selectedPiece.row][selectedPiece.col] = '';
+      setBoard(newBoard);
+      setSelectedPiece(null);
+
+      const move = `Moved from (${selectedPiece.row}, ${selectedPiece.col}) to (${row}, ${col})`;
+      onMove(move, piece);
+    }
   };
 
   const renderSquare = (row: number, col: number) => {
     const piece = board[row][col];
+    const isSelected = selectedPiece && selectedPiece.row === row && selectedPiece.col === col;
     return (
       <div
         className={`w-16 h-16 flex items-center justify-center ${
           (row + col) % 2 === 0 ? 'bg-gray-300' : 'bg-gray-700'
-        } hover:opacity-75 cursor-pointer`}
+        } ${isSelected ? 'bg-blue-500' : ''} hover:opacity-75 cursor-pointer`}
         onClick={() => handleSquareClick(row, col)}
       >
         {piece && (
@@ -66,21 +81,6 @@ const ChessBoard: React.FC<{ onMove: (move: string) => void }> = ({ onMove }) =>
             ))}
           </React.Fragment>
         ))}
-      </div>
-      <div className="mt-4 w-64">
-        <label className="block text-sm font-semibold">FEN:</label>
-        <input
-          type="text"
-          value={FEN}
-          readOnly
-          className="border px-2 py-1 mt-2 w-full"
-        />
-      </div>
-      <div className="mt-4 w-64">
-        <label className="text-sm font-semibold">PGN:</label>
-        <div className="border px-2 py-1 mt-2 w-full">
-          {PGN}
-        </div>
       </div>
     </div>
   );

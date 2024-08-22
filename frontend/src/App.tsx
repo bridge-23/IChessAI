@@ -4,10 +4,10 @@ import Leaderboard from './components/LeaderBoard';
 import MoveHistory from './components/MoveHistory';
 
 const App: React.FC = () => {
-  const [moves, setMoves] = useState<string[]>([]);
+  const [moves, setMoves] = useState<{ move: string, piece: string }[]>([]);
 
-  const handleMove = (move: string) => {
-    setMoves((prevMoves) => [...prevMoves, move]);
+  const handleMove = (move: string, piece: string) => {
+    setMoves((prevMoves) => [...prevMoves, { move, piece }]);
   };
 
   return (
