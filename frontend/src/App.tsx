@@ -53,14 +53,13 @@ const App: React.FC = () => {
     setCurrentView('onboarding');
   };
 
-  if (loginStatus !== "success") {
-    return <LoginButton />;
-  }
-
   return (
     <div className="flex flex-col items-center h-screen p-4">
+      <div className="absolute top-0 right-0 p-4">
+        <LoginButton />
+      </div>
       {currentView === 'onboarding' && (
-        <Onboarding onSelectGameMode={handleGameModeSelect} />
+        <Onboarding onSelectGameMode={handleGameModeSelect} shouldDisable={loginStatus !== "success"} />
       )}
       {currentView === 'game' && (
         <>
