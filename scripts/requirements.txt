@@ -1,0 +1,6 @@
+ic-py==1.0.1
+requests
+python-dotenv
+black
+mypy
+pylint==2.13.9
