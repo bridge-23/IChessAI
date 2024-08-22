@@ -1,12 +1,20 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { pieceIcons } from './interface/piece-icons';
 import { Chess, Move, Square } from 'chess.js';
 
-const ChessBoard: React.FC<{ onMove: (move: string, piece: string) => void }> = ({ onMove }) => {
+const ChessBoardVSAI: React.FC<{ onMove: (move: string, piece: string) => void }> = ({ onMove }) => {
   const [chess] = useState(new Chess()); // Initialize the chess game instance
   const [board, setBoard] = useState(chess.board());
   const [selectedSquare, setSelectedSquare] = useState<Square | null>(null); // Explicitly typing as Square | null
   const [isWhiteTurn, setIsWhiteTurn] = useState(true); // Track whose turn it is
+  const [moveAttempt, setMoveAttempt] = useState(0); // Track number of AI move attempts
+
+  useEffect(() => {
+    if (!isWhiteTurn) {
+      // If it's Black's turn, make an AI move
+      makeAiMove();
+    }
+  }, [isWhiteTurn]);
 
   const handleSquareClick = (row: number, col: number) => {
     const square: Square = `${'abcdefgh'[col]}${8 - row}` as Square; // Convert row/col to chess notation and cast to Square
@@ -35,6 +43,50 @@ const ChessBoard: React.FC<{ onMove: (move: string, piece: string) => void }> = 
         // Invalid move or same square re-selection, clear selection
         setSelectedSquare(null);
       }
+    }
+  };
+
+  const makeAiMove = () => {
+
+
+    // Simulating server response
+    let inference = '';
+
+    if (moveAttempt === 0) {
+      inference = 'h8g8 f8e7 f8d6 f8c5 f8b4 f8a3 e8e7 d8e7 b8c6 b8a6';
+      console.log('AI attempt 1: Impossible moves.');
+    } else {
+      inference = 'h8g8 f8e7 e7e5';
+      console.log('AI attempt 2: Making a valid move with a pawn.');
+    }
+
+    setMoveAttempt(moveAttempt + 1);
+
+    const moves = inference.split(' ');
+    let moveMade = false;
+
+    for (const move of moves) {
+      const from: Square = move.slice(0, 2) as Square;
+      const to: Square = move.slice(2, 4) as Square;
+      
+      // Check the validity of the move before making it
+      const validMove = chess.moves({ square: from, verbose: true }).find((m: Move) => m.to === to);
+      if (validMove) {
+        const aiMove = chess.move({ from, to, promotion: 'q' });
+
+        if (aiMove) {
+          setBoard(chess.board());
+          onMove(aiMove.san, aiMove.piece);
+          setIsWhiteTurn(!isWhiteTurn);
+          moveMade = true;
+          break;
+        }
+      }
+    }
+
+    if (!moveMade) {
+      // If none of the suggested moves are valid, try again
+      makeAiMove();
     }
   };
 
@@ -76,4 +128,4 @@ const ChessBoard: React.FC<{ onMove: (move: string, piece: string) => void }> = 
   );
 };
 
-export default ChessBoard;
+export default ChessBoardVSAI;
