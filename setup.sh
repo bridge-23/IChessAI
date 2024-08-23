@@ -35,17 +35,5 @@ dfx canister call chess23 set_canister_mode chat-principal
 #######################################################################
 echo " "
 echo "--------------------------------------------------"
-echo "Checking health endpoint"
-dfx canister call chess23 health
-
-#######################################################################
-echo " "
-echo "--------------------------------------------------"
-echo "Initializing the canister configurations"
-python -m scripts.nft_init --network local --canister chess23 --nft-supply-cap 0 --nft-symbol "" --nft-name "" --nft-description ""
-
-#######################################################################
-echo " "
-echo "--------------------------------------------------"
 echo "Uploading the model & tokenizer"
 python -m scripts.upload --network local --canister chess23 --model models/model.bin --tokenizer models/tok512.bin

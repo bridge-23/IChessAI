@@ -1,0 +1,73 @@
+{
+  "game": {
+    "initial_state": {
+      "input_format": "1r3q1r/pbppkpb1/2n3pn/1p6/3P4/8/PPP1PPPP/R1BQKBR1 b",
+      "inference": " h8g8 h8f8 h8h7 h8h6 h8h5 h8h4 h8h3 e8f8 e8d8 a8d8\n<s>\n"
+    },
+    "moves": [
+      {
+        "move_number": 1,
+        "board_state": "1r3qr1/pbppkpb1/2n3pn/1p6/3P4/8/PPP1PPPP/R1BQKBR1 w",
+        "inference": " a1a2 a1a3 a1a4 b1a3 b1c3 b1d2 f1f3 g1f3 e1f2 e1d2 e1e2 f2g1\n<s>\n",
+        "selected_move": "e1f2",
+        "new_board_state": "1r3qr1/pbppkpb1/2n3pn/1p6/3P4/8/PPP1PPPP/R1B1K1R1 b"
+      },
+      {
+        "move_number": 2,
+        "board_state": "1r3qr1/pbppkpb1/2n3pn/1p6/3P4/8/PPP1PPPP/R1B1K1R1 b",
+        "inference": " h8g8 h8f8 h8h7 h8h6 h8h5 h8h4 h8h3 e8f8 e8d8 a8d8\n<s>\n",
+        "selected_move": "h8g8",
+        "new_board_state": "1r3q1r/pbppkpb1/2n3pn/1p6/3P4/8/PPP1PPPP/R1B1K1R1 w"
+      },
+      {
+        "move_number": 3,
+        "board_state": "1r3q1r/pbppkpb1/2n3pn/1p6/3P4/8/PPP1PPPP/R1B1K1R1 w",
+        "inference": " f1f2 f1f3 f1f4 f1g1 f1g2 f1g3 g1h1 e1f2 e1d2 e1e2 f2g1\n<s>\n",
+        "selected_move": "f1f3",
+        "new_board_state": "1r3q1r/pbppkpb1/2n3pn/1p6/3P4/5P2/PPP1P1PP/R1B1K1R1 b"
+      },
+      {
+        "move_number": 4,
+        "board_state": "1r3q1r/pbppkpb1/2n3pn/1p6/3P4/5P2/PPP1P1PP/R1B1K1R1 b",
+        "inference": " h8g8 h8f8 h8h7 h8h6 h8h5 h8h4 h8h3 e8f8 e8d8 a8d8\n<s>\n",
+        "selected_move": "e8f8",
+        "new_board_state": "1r3qr1/pbpp1pb1/2n3pn/1p6/3P4/5P2/PPP1P1PP/R1B1K1R1 w"
+      },
+      {
+        "move_number": 5,
+        "board_state": "1r3qr1/pbpp1pb1/2n3pn/1p6/3P4/5P2/PPP1P1PP/R1B1K1R1 w",
+        "inference": " f3f4 f3g3 f3h3 g1g2 e1f2 e1d2 e1e2 f2g1\n<s>\n",
+        "selected_move": "f3f4",
+        "new_board_state": "1r3qr1/pbpp1pb1/2n3pn/1p6/3P1P2/5P2/PPP1P1PP/R1B1K1R1 b"
+      },
+      {
+        "move_number": 6,
+        "board_state": "1r3qr1/pbpp1pb1/2n3pn/1p6/3P1P2/5P2/PPP1P1PP/R1B1K1R1 b",
+        "inference": " h8g8 h8f8 h8h7 h8h6 h8h5 h8h4 h8h3 e8f8 e8d8 a8d8\n<s>\n",
+        "selected_move": "h8f8",
+        "new_board_state": "1r3q2r/pbpp1pb1/2n3pn/1p6/3P1P2/5P2/PPP1P1PP/R1B1K1R1 w"
+      },
+      {
+        "move_number": 7,
+        "board_state": "1r3q2r/pbpp1pb1/2n3pn/1p6/3P1P2/5P2/PPP1P1PP/R1B1K1R1 w",
+        "inference": " e1f2 e1d2 e1e2 f2g1 f2g2 f2g3 f2h4\n<s>\n",
+        "selected_move": "e1f2",
+        "new_board_state": "1r3q2r/pbpp1pb1/2n3pn/1p6/3P1P2/5P2/PPP1P1PP/R1B1K1R1 b"
+      },
+      {
+        "move_number": 8,
+        "board_state": "1r3q2r/pbpp1pb1/2n3pn/1p6/3P1P2/5P2/PPP1P1PP/R1B1K1R1 b",
+        "inference": " h8g8 h8f8 h8h7 h8h6 h8h5 h8h4 h8h3 e8f8 e8d8 a8d8\n<s>\n",
+        "selected_move": null,
+        "note": "All possible moves are invalid, rechecking board state"
+      },
+      {
+        "move_number": 9,
+        "board_state": "1r3q2r/pbpp1pb1/2n3pn/1p6/3P1P2/5P2/PPP1P1PP/R1B1K1R1 b",
+        "inference": " h8g8 h8f8 h8h7 h8h6 h8h5 h8h4 h8h3 e8f8 e8d8 a8d8\n<s>\n",
+        "selected_move": "a8d8",
+        "new_board_state": "3rq1r1/pbpp1pb1/2n3pn/1p6/3P1P2/5P2/PPP1P1PP/R1B1K1R1 w"
+      }
+    ]
+  }
+}
