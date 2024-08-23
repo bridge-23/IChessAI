@@ -115,6 +115,145 @@ std::string generate(IC_API ic_api, Chat *chat, Transformer *transformer,
 }
 // Inference endpoint for ICGPT, with story ownership based on principal of caller
 void inference() { inference_(false); }
+
+
+#include <iostream>
+#include <sstream>
+
+void log(const std::string& message) {
+    std::cout << "[LOG] " << message << std::endl;
+}
+
+void inference_chess() {
+    log("Entering inference_chess()");
+    IC_API ic_api(CanisterUpdate{std::string(__func__)}, false);
+    
+    if (!is_canister_mode_chat_principal()) {
+        log("Access Denied: canister_mode is not set to 'principal'.");
+        std::string error_msg = "Access Denied: canister_mode is not set to 'principal'.";
+        ic_api.to_wire(CandidTypeVariant{
+            "Err", CandidTypeVariant{"Other", CandidTypeText{error_msg}}});
+        return;
+    }
+    
+    // if (!is_ready_and_authorized(ic_api)) {
+    //     log("Not ready or not authorized");
+    //     return;
+    // }
+
+    log("Initializing wire_prompt");
+    Prompt wire_prompt;
+    CandidTypeRecord r_in;
+    r_in.append("prompt", CandidTypeText{&wire_prompt.prompt});
+
+    // Default values
+    wire_prompt.steps = 100;
+    wire_prompt.temperature = 0.7;
+    wire_prompt.topp = 0.9;
+    wire_prompt.rng_seed = 100;
+
+    ic_api.from_wire(r_in);
+    log("Prompt initialized: " + wire_prompt.prompt);
+
+    CandidTypePrincipal caller = ic_api.get_caller();
+    std::string principal = caller.get_text();
+    log("Caller principal: " + principal);
+
+    if (p_chats && p_chats->umap.find(principal) == p_chats->umap.end()) {
+        log("Building new chat for principal");
+        if (!build_new_chat(principal, ic_api)) {
+            log("Failed to build new chat");
+            return;
+        }
+    }
+
+    if (!p_chats || !p_chats_output_history) {
+        log("ERROR: null pointers that should not be null");
+        std::string error_msg = "ERROR: null pointers that should not be null in function " + std::string(__func__);
+        ic_api.to_wire(CandidTypeVariant{
+            "Err", CandidTypeVariant{"Other", CandidTypeText{error_msg}}});
+        return;
+    }
+
+    Chat *chat = &p_chats->umap[principal];
+    std::string *output_history = &p_chats_output_history->umap[principal];
+    MetadataUser *metadata_user = &p_metadata_users->umap[principal];
+
+    bool error{false};
+    log("Calling do_inference()");
+    std::string output = do_inference(ic_api, wire_prompt, chat, output_history, metadata_user, &error);
+
+    if (error) {
+        log("Error occurred during inference: " + output);
+        ic_api.to_wire(CandidTypeVariant{
+            "Err", CandidTypeVariant{"Other", CandidTypeText{output}}});
+        return;
+    }
+
+    log("Inference completed successfully");
+    IC_API::debug_print(output);
+    
+    CandidTypeRecord inference_record;
+    inference_record.append("inference", CandidTypeText{output});
+    inference_record.append("num_tokens", CandidTypeNat64{chat->inference_steps});
+    ic_api.to_wire(CandidTypeVariant{"Ok", CandidTypeRecord{inference_record}});
+    log("Response sent to wire");
+}
+
+std::string do_inference(IC_API &ic_api, Prompt wire_prompt, Chat *chat,
+                         std::string *output_history,
+                         MetadataUser *metadata_user, bool *error) {
+    log("Entering do_inference()");
+
+    // parameter validation/overrides
+    if (wire_prompt.rng_seed <= 0) {
+        wire_prompt.rng_seed = ic_api.time(); // time in ns
+        log("RNG seed set to current time: " + std::to_string(wire_prompt.rng_seed));
+    }
+    if (wire_prompt.temperature < 0.0) {
+        wire_prompt.temperature = 0.0;
+        log("Temperature adjusted to 0.0");
+    }
+    if (wire_prompt.topp < 0.0 || 1.0 < wire_prompt.topp) {
+        wire_prompt.topp = 0.9;
+        log("Top-p adjusted to 0.9");
+    }
+    if (wire_prompt.steps < 0) {
+        wire_prompt.steps = 0;
+        log("Steps adjusted to 0");
+    }
+
+    log("Building sampler");
+    Sampler sampler;
+    build_sampler(&sampler, transformer.config.vocab_size,
+                  wire_prompt.temperature, wire_prompt.topp,
+                  wire_prompt.rng_seed);
+
+    log("Starting generation");
+    std::string output;
+    output += generate(ic_api, chat, &transformer, &tokenizer, &sampler,
+                       wire_prompt.prompt, wire_prompt.steps, error);
+
+    if (*error) {
+        log("Error occurred during generation");
+    } else {
+        log("Generation completed successfully");
+        *output_history += output;
+        
+        if (!metadata_user->metadata_chats.empty()) {
+            MetadataChat &metadata_chat = metadata_user->metadata_chats.back();
+            metadata_chat.total_steps += chat->total_steps;
+            log("Updated metadata: total_steps = " + std::to_string(metadata_chat.total_steps));
+        }
+    }
+
+    log("Freeing sampler");
+    free_sampler(&sampler);
+
+    log("Exiting do_inference()");
+    return output;
+}
+
 void inference_mo() {
   inference_(true);
 } // Use this when calling from Motoko, with float64
@@ -190,62 +329,62 @@ void inference_(bool from_motoko) {
   ic_api.to_wire(CandidTypeVariant{"Ok", CandidTypeRecord{inference_record}});
 }
 
-std::string do_inference(IC_API &ic_api, Prompt wire_prompt, Chat *chat,
-                         std::string *output_history,
-                         MetadataUser *metadata_user, bool *error) {
+// std::string do_inference(IC_API &ic_api, Prompt wire_prompt, Chat *chat,
+//                          std::string *output_history,
+//                          MetadataUser *metadata_user, bool *error) {
 
-  // parameter validation/overrides
-  if (wire_prompt.rng_seed <= 0)
-    wire_prompt.rng_seed = ic_api.time(); // time in ns
-  if (wire_prompt.temperature < 0.0) wire_prompt.temperature = 0.0;
-  if (wire_prompt.topp < 0.0 || 1.0 < wire_prompt.topp) wire_prompt.topp = 0.9;
-  if (wire_prompt.steps < 0) wire_prompt.steps = 0;
+//   // parameter validation/overrides
+//   if (wire_prompt.rng_seed <= 0)
+//     wire_prompt.rng_seed = ic_api.time(); // time in ns
+//   if (wire_prompt.temperature < 0.0) wire_prompt.temperature = 0.0;
+//   if (wire_prompt.topp < 0.0 || 1.0 < wire_prompt.topp) wire_prompt.topp = 0.9;
+//   if (wire_prompt.steps < 0) wire_prompt.steps = 0;
 
-  // icpp: if caller provides a prompt , set bos & eos
-  // if (wire_prompt.prompt.size() > 0) {
-  //   transformer.bos = 1;
-  //   transformer.eos = 1;
-  // }
+//   // icpp: if caller provides a prompt , set bos & eos
+//   // if (wire_prompt.prompt.size() > 0) {
+//   //   transformer.bos = 1;
+//   //   transformer.eos = 1;
+//   // }
 
-  // icpp: We treat 'steps' as additional steps to generate
-  //       Do this check inside generate method
-  // if (wire_prompt.steps == 0 || wire_prompt.steps > transformer.config.seq_len)
-  //   wire_prompt.steps = transformer.config.seq_len; // override to ~max length
-  // IC_API::debug_print("--\nAfter parameter validation/overrides.");
-  // print_prompt(wire_prompt);
+//   // icpp: We treat 'steps' as additional steps to generate
+//   //       Do this check inside generate method
+//   // if (wire_prompt.steps == 0 || wire_prompt.steps > transformer.config.seq_len)
+//   //   wire_prompt.steps = transformer.config.seq_len; // override to ~max length
+//   // IC_API::debug_print("--\nAfter parameter validation/overrides.");
+//   // print_prompt(wire_prompt);
 
-  // build the Sampler
-  Sampler sampler;
-  build_sampler(&sampler, transformer.config.vocab_size,
-                wire_prompt.temperature, wire_prompt.topp,
-                wire_prompt.rng_seed);
+//   // build the Sampler
+//   Sampler sampler;
+//   build_sampler(&sampler, transformer.config.vocab_size,
+//                 wire_prompt.temperature, wire_prompt.topp,
+//                 wire_prompt.rng_seed);
 
-  // run!
-  std::string output;
-  // if (mode == "generate") {
-  output += generate(ic_api, chat, &transformer, &tokenizer, &sampler,
-                     wire_prompt.prompt, wire_prompt.steps, error);
-  // } else if (mode =="chat") {
-  // chat(&transformer, &tokenizer, &sampler, prompt, system_prompt, steps);
-  // } else {
-  //   return an error about: "unsupported mode: " + mode)
-  // }
+//   // run!
+//   std::string output;
+//   // if (mode == "generate") {
+//   output += generate(ic_api, chat, &transformer, &tokenizer, &sampler,
+//                      wire_prompt.prompt, wire_prompt.steps, error);
+//   // } else if (mode =="chat") {
+//   // chat(&transformer, &tokenizer, &sampler, prompt, system_prompt, steps);
+//   // } else {
+//   //   return an error about: "unsupported mode: " + mode)
+//   // }
 
-  // if (!*error) {
-  //   // Update & persist full output using Orthogonal Persistence
-  //   *output_history += output;
+//   // if (!*error) {
+//   //   // Update & persist full output using Orthogonal Persistence
+//   //   *output_history += output;
 
-  //   // Now we have the total_steps, stored with the chat
-  //   // And we can update the metadata_user
-  //   if (!metadata_user->metadata_chats.empty()) {
-  //     MetadataChat &metadata_chat = metadata_user->metadata_chats.back();
-  //     metadata_chat.total_steps += chat->total_steps;
-  //   }
-  //
+//   //   // Now we have the total_steps, stored with the chat
+//   //   // And we can update the metadata_user
+//   //   if (!metadata_user->metadata_chats.empty()) {
+//   //     MetadataChat &metadata_chat = metadata_user->metadata_chats.back();
+//   //     metadata_chat.total_steps += chat->total_steps;
+//   //   }
+//   //
 
-  // memory and file handles cleanup
-  free_sampler(&sampler);
+//   // memory and file handles cleanup
+//   free_sampler(&sampler);
 
-  return output;
+//   return output;
 
-}
+// }

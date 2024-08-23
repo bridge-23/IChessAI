@@ -33,12 +33,8 @@ const ChessDashboard = () => {
 
   const { call: callInference, data: inferenceData, error: inferenceError, loading: inferenceLoading } = useQueryCall({
     refetchOnMount: false,
-    functionName: "inference",
+    functionName: "inference_chess",
     args: [{
-      temperature: 0.7,
-      topp: 0.9,
-      steps: BigInt(50),
-      rng_seed: BigInt(12345),
       prompt: "rnbqkbr1/pppppppp/7n/6N1/8/8/PPPPPPPP/RNBQKB1R w"
     }]
   });
@@ -66,6 +62,7 @@ const ChessDashboard = () => {
   };
 
   const handleInferenceResult = (result: InferenceRecordResult) => {
+    console.log(result)
     if ('Ok' in result) {
       setInferenceResult(`Inference Data: ${JSON.stringify(result.Ok)}`);
       setDebugInfo(prev => `${prev}\nInference Data Type: InferenceRecord`);

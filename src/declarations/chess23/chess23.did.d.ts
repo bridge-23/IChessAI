@@ -46,13 +46,7 @@ export interface NFTCollectionRecord {
 export type NFTCollectionRecordResult = { 'Ok' : NFTCollectionRecord } |
   { 'Err' : ApiError };
 export interface NFTWhitelistRecord { 'id' : Principal, 'description' : string }
-export interface Prompt {
-  'temperature' : number,
-  'topp' : number,
-  'steps' : bigint,
-  'rng_seed' : bigint,
-  'prompt' : string,
-}
+export interface Prompt { 'prompt' : string }
 export interface PromptMo {
   'temperature' : number,
   'topp' : number,
@@ -85,8 +79,7 @@ export interface _SERVICE {
   'get_users' : ActorMethod<[], UsersRecordResult>,
   'health' : ActorMethod<[], StatusCodeRecordResult>,
   'http_request' : ActorMethod<[HttpRequest], HttpResponse>,
-  'inference' : ActorMethod<[Prompt], InferenceRecordResult>,
-  'inference_mo' : ActorMethod<[PromptMo], InferenceRecordResult>,
+  'inference_chess' : ActorMethod<[Prompt], InferenceRecordResult>,
   'initialize' : ActorMethod<[], StatusCodeRecordResult>,
   'new_chat' : ActorMethod<[], StatusCodeRecordResult>,
   'nft_ami_whitelisted' : ActorMethod<[], StatusCodeRecordResult>,

@@ -10,12 +10,8 @@ def simulate_canister_call(board, steps=200, temperature=1.0, topp=0.9):
     rng_seed = random.randint(0, 1000000)
 
     command = f"""
-    dfx canister call chess23 inference '(record {{
+    dfx canister call chess23 inference_chess '(record {{
         prompt = "{input_format}" : text;
-        steps = {steps} : nat64;
-        temperature = {temperature} : float32;
-        topp = {topp} : float32;
-        rng_seed = {rng_seed} : nat64;
     }})'
     """
     print(f"Executing command with RNG seed: {rng_seed}")

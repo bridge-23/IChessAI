@@ -8,6 +8,8 @@
 
 void inference() WASM_SYMBOL_EXPORTED("canister_update inference");
 void inference_mo() WASM_SYMBOL_EXPORTED("canister_update inference_mo");
+void inference_chess() WASM_SYMBOL_EXPORTED("canister_update inference_chess");
+
 
 void inference_(bool from_motoko);
 std::string do_inference(IC_API &ic_api, Prompt wire_prompt, Chat *chat,

@@ -49,24 +49,11 @@ export const idlFactory = ({ IDL }) => {
     'upgrade' : IDL.Opt(IDL.Bool),
     'status_code' : IDL.Nat16,
   });
-  const Prompt = IDL.Record({
-    'temperature' : IDL.Float32,
-    'topp' : IDL.Float32,
-    'steps' : IDL.Nat64,
-    'rng_seed' : IDL.Nat64,
-    'prompt' : IDL.Text,
-  });
+  const Prompt = IDL.Record({ 'prompt' : IDL.Text });
   const InferenceRecord = IDL.Record({ 'inference' : IDL.Text });
   const InferenceRecordResult = IDL.Variant({
     'Ok' : InferenceRecord,
     'Err' : ApiError,
-  });
-  const PromptMo = IDL.Record({
-    'temperature' : IDL.Float64,
-    'topp' : IDL.Float64,
-    'steps' : IDL.Nat64,
-    'rng_seed' : IDL.Nat64,
-    'prompt' : IDL.Text,
   });
   const NFT = IDL.Record({ 'token_id' : IDL.Text });
   const StoryRecord = IDL.Record({ 'story' : IDL.Text });
@@ -85,6 +72,13 @@ export const idlFactory = ({ IDL }) => {
     'Ok' : NFTCollectionRecord,
     'Err' : ApiError,
   });
+  const PromptMo = IDL.Record({
+    'temperature' : IDL.Float64,
+    'topp' : IDL.Float64,
+    'steps' : IDL.Nat64,
+    'rng_seed' : IDL.Nat64,
+    'prompt' : IDL.Text,
+  });
   const NFTWhitelistRecord = IDL.Record({
     'id' : IDL.Principal,
     'description' : IDL.Text,
@@ -100,8 +94,7 @@ export const idlFactory = ({ IDL }) => {
     'get_users' : IDL.Func([], [UsersRecordResult], ['query']),
     'health' : IDL.Func([], [StatusCodeRecordResult], ['query']),
     'http_request' : IDL.Func([HttpRequest], [HttpResponse], ['query']),
-    'inference' : IDL.Func([Prompt], [InferenceRecordResult], []),
-    'inference_mo' : IDL.Func([PromptMo], [InferenceRecordResult], []),
+    'inference_chess' : IDL.Func([Prompt], [InferenceRecordResult], []),
     'initialize' : IDL.Func([], [StatusCodeRecordResult], []),
     'new_chat' : IDL.Func([], [StatusCodeRecordResult], []),
     'nft_ami_whitelisted' : IDL.Func([], [StatusCodeRecordResult], []),

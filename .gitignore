@@ -36,4 +36,3 @@
 node_modules/
 out/
 build-library
-node_modules/*
