@@ -1,0 +1,17 @@
+{
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=7.0.0"
+  },
+  "name": "chess23",
+  "scripts": {
+    "dev": "npm run dev --workspaces --if-present",
+    "build": "npm run build --workspaces --if-present",
+    "lint": "npm run lint --workspaces --if-present",
+    "preview": "npm preview --workspaces --if-present"
+  },
+  "type": "module",
+  "workspaces": [
+    "frontend"
+  ]
+}

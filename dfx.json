@@ -5,6 +5,16 @@
         "type": "custom",
         "candid": "src/chess23.did",
         "wasm": "build/chess23.wasm"
+      },
+      "frontend": {
+        "dependencies": [
+          "chess23"
+        ],
+        "source": [
+          "frontend/dist"
+        ],
+        "type": "assets",
+        "workspace": "frontend"
       }
     },
     "defaults": {
