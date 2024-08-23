@@ -48,7 +48,7 @@ const ChessDashboard = () => {
     <div className="flex flex-col items-center h-screen p-4">
       {currentView === 'onboarding' && (
         <div className="flex flex-col items-center justify-center h-full">
-          <Onboarding onSelectGameMode={handleGameModeSelect} shouldDisable={false} />
+          <Onboarding onSelectGameMode={handleGameModeSelect}/>
         </div>
       )}
       {currentView === 'game' && (

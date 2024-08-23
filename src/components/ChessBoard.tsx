@@ -7,7 +7,7 @@ const ChessBoard: React.FC<{ onMove: (move: string, piece: string) => void }> = 
   const [board, setBoard] = useState(chess.board());
   const [selectedSquare, setSelectedSquare] = useState<Square | null>(null); // Explicitly typing as Square | null
   const [isWhiteTurn, setIsWhiteTurn] = useState(true); // Track whose turn it is
-  const isLastMove = false; // Initialize isLastMove variable
+  const [lastMove, setLastMove] = useState<{ from: Square; to: Square } | null>(null); // Для хранения последнего хода
 
   const handleSquareClick = (row: number, col: number) => {
     const square: Square = `${'abcdefgh'[col]}${8 - row}` as Square; // Convert row/col to chess notation and cast to Square
@@ -28,6 +28,7 @@ const ChessBoard: React.FC<{ onMove: (move: string, piece: string) => void }> = 
         if (move) {
           setBoard(chess.board());
           onMove(move.san, move.piece); // SAN (Standard Algebraic Notation) of the move
+          setLastMove({ from: selectedSquare, to: square }); // Сохраняем последний ход
           setSelectedSquare(null);
           setIsWhiteTurn(!isWhiteTurn);
           console.log('Board state after move:', chess.fen());
@@ -40,14 +41,20 @@ const ChessBoard: React.FC<{ onMove: (move: string, piece: string) => void }> = 
   };
 
   const renderSquare = (row: number, col: number) => {
+    const square = `${'abcdefgh'[col]}${8 - row}` as Square;
     const piece = board[row][col]?.type;
     const color = board[row][col]?.color;
-    const isSelected = selectedSquare === `${'abcdefgh'[col]}${8 - row}`;
+    const isSelected = selectedSquare === square;
+    const isLastMoveFrom = lastMove?.from === square;
+    const isLastMoveTo = lastMove?.to === square;
 
     return (
       <div
-        className={`w-16 h-16 flex items-center justify-center ${(row + col) % 2 === 0 ? 'bg-gray-300' : 'bg-gray-700'
-          } ${isSelected ? 'bg-blue-500' : ''} ${isLastMove ? 'bg-yellow-500' : ''} hover:opacity-75 cursor-pointer`}
+        className={`w-16 h-16 flex items-center justify-center transition-all duration-300 ${
+          (row + col) % 2 === 0 ? 'bg-gray-300' : 'bg-gray-700'
+        } ${isSelected ? 'bg-blue-500' : ''} ${
+          isLastMoveFrom || isLastMoveTo ? 'bg-yellow-300' : ''
+        } hover:opacity-75 cursor-pointer`}
         onClick={() => handleSquareClick(row, col)}
       >
         {piece && (
