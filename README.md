@@ -45,11 +45,6 @@ Output:
   },
 )
 ```
-
-## Setup and Deployment
-
-(Add instructions for setting up the development environment, training the model, and deploying to an ICP canister.)
-
 ## Performance Considerations
 
 - The model uses a random number generator (RNG) seed for deterministic behavior.
@@ -70,13 +65,10 @@ Output:
 
 We welcome contributions to this project! Please see our contributing guidelines for more information.
 
-## License
-
-(Add appropriate license information)
 
 ## Contact
 
-For questions or support, please open an issue in this repository or contact (add contact information).
+@mauriciocarpio
 
 ### REFERENCE
 
