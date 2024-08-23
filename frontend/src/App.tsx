@@ -1,3 +1,4 @@
+// src/App.tsx
 import React, { useState, useEffect } from 'react';
 import ChessBoard from './components/ChessBoard';
 import Leaderboard from './components/LeaderBoard';
@@ -49,16 +50,29 @@ const App: React.FC = () => {
     }
   };
 
+  if (loginStatus !== "success") {
+    return (
+      <div className="flex flex-col items-center justify-center h-screen p-4">
+        <div className="absolute top-0 right-0 p-4">
+          <LoginButton />
+        </div>
+        <Onboarding onSelectGameMode={handleGameModeSelect} shouldDisable={true} />
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col items-center h-screen p-4">
       <div className="absolute top-0 right-0 p-4">
         <LoginButton />
       </div>
       {currentView === 'onboarding' && (
-        <Onboarding onSelectGameMode={handleGameModeSelect} shouldDisable={loginStatus !== "success"} />
+        <div className="flex flex-col items-center justify-center h-full">
+          <Onboarding onSelectGameMode={handleGameModeSelect} shouldDisable={false} />
+        </div>
       )}
-      {currentView === 'game'  ? (
-        <>
+      {currentView === 'game' && (
+        <div className="flex flex-col items-center h-full">
           <h1 className="text-4xl mb-4 font-bold">Chess 23</h1>
           {showAlert && (
             <div className="absolute top-0 left-0 bg-red-600 text-white px-4 py-2 m-4 rounded-md">
@@ -75,26 +89,12 @@ const App: React.FC = () => {
             </div>
             <MoveHistory moves={moves} />
           </div>
-        </>
-      ) : (
-        <>
-          <h1 className="text-4xl mb-4 font-bold">Chess 23</h1>
-          {showAlert && (
-            <div className="absolute top-0 left-0 bg-red-600 text-white px-4 py-2 m-4 rounded-md">
-              Time is up! Switching turn to {previousPlayer === 'white' ? 'black' : 'white'}.
-            </div>
-          )}
-          <div className="flex flex-grow w-full space-x-4 mt-4 relative">
-            <Leaderboard />
-            <div className="flex-grow flex flex-col items-center">
-              <div className={`mb-4 text-2xl font-bold ${timeLeft <= 10 ? 'text-red-600' : ''}`}>
-                {currentPlayer === 'white' ? 'White' : 'Black'}'s Turn - Time Left: {timeLeft}s
-              </div>
-              <ChessBoardVSAI onMove={handleMove} />
-            </div>
-            <MoveHistory moves={moves} />
-          </div>
-        </>
+        </div>
+      )}
+      {currentView === 'under-construction' && (
+        <div className="flex justify-center items-center h-full">
+          <h1 className="text-4xl mb-4 font-bold">This feature is under construction</h1>
+        </div>
       )}
     </div>
   );
