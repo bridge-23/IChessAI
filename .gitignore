@@ -32,5 +32,4 @@
 *.out
 *.app
 
-build/*
 build-library/*
