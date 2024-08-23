@@ -43,11 +43,7 @@ const App: React.FC = () => {
 
   const handleGameModeSelect = (mode: 'player-vs-player' | 'player-vs-ai') => {
     setGameMode(mode);
-    if (mode === 'player-vs-ai') {
-      setCurrentView('under-construction');
-    } else {
-      setCurrentView('game');
-    }
+    setCurrentView('game');
   };
 
   if (loginStatus !== "success") {
@@ -85,15 +81,11 @@ const App: React.FC = () => {
               <div className={`mb-4 text-2xl font-bold ${timeLeft <= 10 ? 'text-red-600' : ''}`}>
                 {currentPlayer === 'white' ? 'White' : 'Black'}'s Turn - Time Left: {timeLeft}s
               </div>
-              <ChessBoard onMove={handleMove} />
+              {gameMode === 'player-vs-player' && <ChessBoard onMove={handleMove} />}
+              {gameMode === 'player-vs-ai' && <ChessBoardVSAI onMove={handleMove} />}
             </div>
             <MoveHistory moves={moves} />
           </div>
-        </div>
-      )}
-      {currentView === 'under-construction' && (
-        <div className="flex justify-center items-center h-full">
-          <h1 className="text-4xl mb-4 font-bold">This feature is under construction</h1>
         </div>
       )}
     </div>
