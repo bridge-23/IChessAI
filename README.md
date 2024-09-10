@@ -1,4 +1,5 @@
 # On-Chain Chess LLM on ICP Canister
+![IChess](https://github.com/user-attachments/assets/7e1ac5d9-e13e-46cb-bab2-235df78d3e32)
 
 ## Project Overview
 
